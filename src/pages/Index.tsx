@@ -1,12 +1,91 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { Users, Eye, MousePointerClick, Clock, TrendingUp, Shield, Activity } from "lucide-react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Header } from "@/components/layout/Header";
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { TrafficChart } from "@/components/dashboard/TrafficChart";
+import { GeolocationMap } from "@/components/dashboard/GeolocationMap";
+import { SecurityScore } from "@/components/dashboard/SecurityScore";
+import { URLAnalyzer } from "@/components/dashboard/URLAnalyzer";
+import { MarketingInsights } from "@/components/dashboard/MarketingInsights";
+import { TopSources } from "@/components/dashboard/TopSources";
+import { RecentScans } from "@/components/dashboard/RecentScans";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background">
+      {/* Background gradient effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
+
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <main className="ml-64 min-h-screen">
+        <Header />
+        
+        <div className="p-6 space-y-6">
+          {/* URL Analyzer */}
+          <URLAnalyzer />
+
+          {/* Key Metrics */}
+          <div className="data-grid">
+            <MetricCard
+              title="Total Visitors"
+              value="118.2K"
+              change={12.5}
+              trend="up"
+              icon={Users}
+              accentColor="primary"
+            />
+            <MetricCard
+              title="Page Views"
+              value="342.8K"
+              change={8.2}
+              trend="up"
+              icon={Eye}
+              accentColor="accent"
+            />
+            <MetricCard
+              title="Click Rate"
+              value="4.28%"
+              change={-2.1}
+              trend="down"
+              icon={MousePointerClick}
+              accentColor="warning"
+            />
+            <MetricCard
+              title="Avg. Session"
+              value="3m 42s"
+              change={5.8}
+              trend="up"
+              icon={Clock}
+              accentColor="success"
+            />
+          </div>
+
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TrafficChart />
+            <TopSources />
+          </div>
+
+          {/* Insights & Geo Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MarketingInsights />
+            <GeolocationMap />
+          </div>
+
+          {/* Security & Recent */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SecurityScore />
+            <RecentScans />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
