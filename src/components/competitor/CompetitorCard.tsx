@@ -1,6 +1,7 @@
 import { Globe, TrendingUp, TrendingDown, Target, Search, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WebsiteAnalysis } from "@/lib/api/website-analysis";
+import { AlertSubscription } from "./AlertSubscription";
 
 interface CompetitorCardProps {
   analysis: WebsiteAnalysis | null;
@@ -48,14 +49,17 @@ export function CompetitorCard({ analysis, isLoading, onRemove }: CompetitorCard
 
   return (
     <div className="glass-card p-6 relative group">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onRemove}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
-      >
-        <X className="w-4 h-4" />
-      </Button>
+      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+        <AlertSubscription competitorUrl={analysis.url} currentScore={analysis.seoScore} />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onRemove}
+          className="h-8 w-8"
+        >
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
