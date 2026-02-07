@@ -131,8 +131,8 @@ async function sendAlertEmail(
             </p>
             
             <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <span style="color: #9ca3af;">SEO Score</span>
+              <div style="margin-bottom: 16px;">
+                <span style="color: #9ca3af;">SEO Score: </span>
                 <span style="color: ${changeColor}; font-weight: bold; font-size: 18px;">
                   ${oldScore} → ${newScore} (${scoreChange > 0 ? '+' : ''}${scoreChange})
                 </span>
@@ -195,23 +195,44 @@ serve(async (req) => {
   const startTime = Date.now();
   console.log('🕐 Starting daily competitor check job...');
 
-  try {
-    // Initialize clients
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY');
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  // Initialize clients
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY');
+  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Create job run record
+  const { data: jobRun, error: jobError } = await supabase
+    .from('cron_job_runs')
+    .insert({
+      job_name: 'daily-competitor-check',
+      status: 'running'
+    })
+    .select()
+    .single();
+
+  const jobRunId = jobRun?.id;
+
+  try {
     if (!firecrawlApiKey || !lovableApiKey || !resendApiKey) {
       console.error('Missing required API keys');
+      if (jobRunId) {
+        await supabase.from('cron_job_runs').update({
+          status: 'failed',
+          error_message: 'Missing API keys',
+          completed_at: new Date().toISOString(),
+          duration_seconds: (Date.now() - startTime) / 1000
+        }).eq('id', jobRunId);
+      }
       return new Response(
         JSON.stringify({ success: false, error: 'Missing API keys' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
 
     // Fetch all active subscriptions
@@ -222,6 +243,14 @@ serve(async (req) => {
 
     if (fetchError) {
       console.error('Failed to fetch subscriptions:', fetchError);
+      if (jobRunId) {
+        await supabase.from('cron_job_runs').update({
+          status: 'failed',
+          error_message: 'Database error: ' + fetchError.message,
+          completed_at: new Date().toISOString(),
+          duration_seconds: (Date.now() - startTime) / 1000
+        }).eq('id', jobRunId);
+      }
       return new Response(
         JSON.stringify({ success: false, error: 'Database error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -230,6 +259,15 @@ serve(async (req) => {
 
     if (!subscriptions || subscriptions.length === 0) {
       console.log('No active subscriptions to check');
+      if (jobRunId) {
+        await supabase.from('cron_job_runs').update({
+          status: 'completed',
+          subscriptions_checked: 0,
+          alerts_sent: 0,
+          completed_at: new Date().toISOString(),
+          duration_seconds: (Date.now() - startTime) / 1000
+        }).eq('id', jobRunId);
+      }
       return new Response(
         JSON.stringify({ success: true, message: 'No subscriptions', checked: 0, alerts: 0 }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -248,7 +286,7 @@ serve(async (req) => {
 
     let checked = 0;
     let alertsSent = 0;
-    const SCORE_THRESHOLD = 5; // Send alert if score changes by 5+ points
+    const SCORE_THRESHOLD = 5;
 
     for (const [url, subs] of urlGroups) {
       console.log(`\n🔍 Checking: ${url}`);
@@ -301,6 +339,18 @@ serve(async (req) => {
                 analysisResult.changes
               );
               
+              // Log alert to history
+              await supabase.from('alert_history').insert({
+                subscription_id: sub.id,
+                email: sub.email,
+                competitor_url: url,
+                old_score: oldScore,
+                new_score: newScore,
+                score_change: newScore - oldScore,
+                changes_summary: analysisResult.changes,
+                email_sent: sent
+              });
+              
               if (sent) {
                 alertsSent++;
                 console.log(`  ✉️ Alert sent to ${sub.email}`);
@@ -321,15 +371,26 @@ serve(async (req) => {
       }
     }
 
-    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`\n✅ Job complete in ${duration}s: ${checked} checked, ${alertsSent} alerts sent`);
+    const duration = (Date.now() - startTime) / 1000;
+    console.log(`\n✅ Job complete in ${duration.toFixed(1)}s: ${checked} checked, ${alertsSent} alerts sent`);
+
+    // Update job run as completed
+    if (jobRunId) {
+      await supabase.from('cron_job_runs').update({
+        status: 'completed',
+        subscriptions_checked: checked,
+        alerts_sent: alertsSent,
+        completed_at: new Date().toISOString(),
+        duration_seconds: duration
+      }).eq('id', jobRunId);
+    }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         checked, 
         alerts: alertsSent,
-        duration: `${duration}s`
+        duration: `${duration.toFixed(1)}s`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -337,6 +398,17 @@ serve(async (req) => {
   } catch (error) {
     console.error('Job failed:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const duration = (Date.now() - startTime) / 1000;
+    
+    if (jobRunId) {
+      await supabase.from('cron_job_runs').update({
+        status: 'failed',
+        error_message: errorMessage,
+        completed_at: new Date().toISOString(),
+        duration_seconds: duration
+      }).eq('id', jobRunId);
+    }
+    
     return new Response(
       JSON.stringify({ success: false, error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

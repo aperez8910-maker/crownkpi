@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      alert_history: {
+        Row: {
+          changes_summary: string | null
+          competitor_url: string
+          email: string
+          email_sent: boolean
+          id: string
+          new_score: number
+          old_score: number
+          score_change: number
+          sent_at: string
+          subscription_id: string | null
+        }
+        Insert: {
+          changes_summary?: string | null
+          competitor_url: string
+          email: string
+          email_sent?: boolean
+          id?: string
+          new_score: number
+          old_score: number
+          score_change: number
+          sent_at?: string
+          subscription_id?: string | null
+        }
+        Update: {
+          changes_summary?: string | null
+          competitor_url?: string
+          email?: string
+          email_sent?: boolean
+          id?: string
+          new_score?: number
+          old_score?: number
+          score_change?: number
+          sent_at?: string
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "competitor_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competitor_subscriptions: {
         Row: {
           competitor_url: string
@@ -47,6 +94,42 @@ export type Database = {
           last_checked_at?: string | null
           last_seo_score?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      cron_job_runs: {
+        Row: {
+          alerts_sent: number | null
+          completed_at: string | null
+          duration_seconds: number | null
+          error_message: string | null
+          id: string
+          job_name: string
+          started_at: string
+          status: string
+          subscriptions_checked: number | null
+        }
+        Insert: {
+          alerts_sent?: number | null
+          completed_at?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          job_name?: string
+          started_at?: string
+          status?: string
+          subscriptions_checked?: number | null
+        }
+        Update: {
+          alerts_sent?: number | null
+          completed_at?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          job_name?: string
+          started_at?: string
+          status?: string
+          subscriptions_checked?: number | null
         }
         Relationships: []
       }

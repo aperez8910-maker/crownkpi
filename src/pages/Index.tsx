@@ -11,6 +11,7 @@ import { MarketingInsights } from "@/components/dashboard/MarketingInsights";
 import { TopSources } from "@/components/dashboard/TopSources";
 import { RecentScans } from "@/components/dashboard/RecentScans";
 import { CompetitorComparison } from "@/components/competitor/CompetitorComparison";
+import { MonitoringDashboard } from "@/components/monitoring/MonitoringDashboard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -19,7 +20,8 @@ const Index = () => {
     switch (activeTab) {
       case "competitors":
         return <CompetitorComparison />;
-      case "analyze":
+      case "monitoring":
+        return <MonitoringDashboard />;
         return (
           <div className="space-y-6">
             <URLAnalyzer />
