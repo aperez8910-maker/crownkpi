@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      competitor_subscriptions: {
+        Row: {
+          competitor_url: string
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_analysis_hash: string | null
+          last_checked_at: string | null
+          last_seo_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          competitor_url: string
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_analysis_hash?: string | null
+          last_checked_at?: string | null
+          last_seo_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          competitor_url?: string
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_analysis_hash?: string | null
+          last_checked_at?: string | null
+          last_seo_score?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
