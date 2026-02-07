@@ -24,7 +24,7 @@ export function Header() {
         <div className="w-px h-8 bg-border" />
         
         <Button variant="ghost" className="gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center">
             <User className="w-4 h-4 text-primary-foreground" />
           </div>
           <span className="text-sm font-medium">Account</span>

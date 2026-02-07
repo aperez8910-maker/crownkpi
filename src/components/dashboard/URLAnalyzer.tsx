@@ -24,7 +24,7 @@ export function URLAnalyzer({ onAnalyze }: URLAnalyzerProps) {
   return (
     <div className="glass-card p-8 glow-border">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center shadow-lg">
           <Globe className="w-6 h-6 text-primary-foreground" />
         </div>
         <div>

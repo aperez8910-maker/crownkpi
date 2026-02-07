@@ -33,8 +33,8 @@ export function TrafficChart() {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(199 89% 48%)" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="hsl(199 89% 48%)" stopOpacity={0}/>
+              <stop offset="5%" stopColor="hsl(43 96% 56%)" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="hsl(43 96% 56%)" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorPageViews" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(280 85% 65%)" stopOpacity={0.3}/>
@@ -56,7 +56,7 @@ export function TrafficChart() {
           <Area 
             type="monotone" 
             dataKey="visitors" 
-            stroke="hsl(199 89% 48%)" 
+            stroke="hsl(43 96% 56%)" 
             strokeWidth={2}
             fillOpacity={1} 
             fill="url(#colorVisitors)" 
