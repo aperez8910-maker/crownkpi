@@ -2,23 +2,48 @@ import { useState } from "react";
 import { Globe, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { fullWebsiteAnalysis, WebsiteAnalysis } from "@/lib/api/website-analysis";
+import { useToast } from "@/hooks/use-toast";
 
 interface URLAnalyzerProps {
-  onAnalyze?: (url: string) => void;
+  onAnalyze?: (url: string, analysis: WebsiteAnalysis) => void;
 }
 
 export function URLAnalyzer({ onAnalyze }: URLAnalyzerProps) {
   const [url, setUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { toast } = useToast();
 
   const handleAnalyze = async () => {
     if (!url) return;
     
     setIsAnalyzing(true);
-    // Simulate analysis
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsAnalyzing(false);
-    onAnalyze?.(url);
+    
+    try {
+      const result = await fullWebsiteAnalysis(url);
+      
+      if (result.success && result.analysis) {
+        toast({
+          title: "Analysis complete",
+          description: `Successfully analyzed ${new URL(url).hostname}`,
+        });
+        onAnalyze?.(url, result.analysis);
+      } else {
+        toast({
+          title: "Analysis failed",
+          description: result.error || "Failed to analyze website",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to analyze website. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
