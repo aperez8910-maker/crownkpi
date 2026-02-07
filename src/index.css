@@ -15,7 +15,7 @@
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 199 89% 48%;
+    --primary: 43 96% 56%;
     --primary-foreground: 222 47% 6%;
 
     --secondary: 222 47% 14%;
@@ -23,6 +23,9 @@
 
     --muted: 222 30% 18%;
     --muted-foreground: 215 20% 55%;
+
+    --gold: 43 96% 56%;
+    --gold-dark: 38 92% 45%;
 
     --accent: 280 85% 65%;
     --accent-foreground: 210 40% 98%;
@@ -42,13 +45,13 @@
 
     --radius: 0.75rem;
 
-    --chart-1: 199 89% 48%;
+    --chart-1: 43 96% 56%;
     --chart-2: 280 85% 65%;
     --chart-3: 142 76% 46%;
-    --chart-4: 38 92% 50%;
+    --chart-4: 199 89% 48%;
     --chart-5: 0 72% 51%;
 
-    --glow-primary: 199 89% 48%;
+    --glow-primary: 43 96% 56%;
     --glow-accent: 280 85% 65%;
 
     --gradient-primary: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(280 85% 65%) 100%);
