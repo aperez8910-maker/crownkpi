@@ -6,7 +6,8 @@ import {
   MapPin, 
   Lightbulb,
   Settings,
-  Crown
+  Crown,
+  Scale
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ interface SidebarProps {
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "competitors", label: "Competitor Analysis", icon: Scale },
   { id: "analyze", label: "Analyze URL", icon: Globe },
   { id: "traffic", label: "Traffic Analytics", icon: BarChart3 },
   { id: "geolocation", label: "Geolocation", icon: MapPin },
