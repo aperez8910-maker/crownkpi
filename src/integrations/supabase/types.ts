@@ -61,6 +61,51 @@ export type Database = {
           },
         ]
       }
+      analysis_reports: {
+        Row: {
+          competitor_insights: string | null
+          created_at: string
+          hostname: string
+          id: string
+          marketing_channels: Json | null
+          recommendations: string[] | null
+          seo_score: number
+          strengths: string[] | null
+          top_keywords: string[] | null
+          traffic_estimate: string | null
+          url: string
+          weaknesses: string[] | null
+        }
+        Insert: {
+          competitor_insights?: string | null
+          created_at?: string
+          hostname: string
+          id?: string
+          marketing_channels?: Json | null
+          recommendations?: string[] | null
+          seo_score: number
+          strengths?: string[] | null
+          top_keywords?: string[] | null
+          traffic_estimate?: string | null
+          url: string
+          weaknesses?: string[] | null
+        }
+        Update: {
+          competitor_insights?: string | null
+          created_at?: string
+          hostname?: string
+          id?: string
+          marketing_channels?: Json | null
+          recommendations?: string[] | null
+          seo_score?: number
+          strengths?: string[] | null
+          top_keywords?: string[] | null
+          traffic_estimate?: string | null
+          url?: string
+          weaknesses?: string[] | null
+        }
+        Relationships: []
+      }
       competitor_subscriptions: {
         Row: {
           competitor_url: string

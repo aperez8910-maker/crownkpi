@@ -13,6 +13,7 @@ import { RecentScans } from "@/components/dashboard/RecentScans";
 import { CompetitorComparison } from "@/components/competitor/CompetitorComparison";
 import { MonitoringDashboard } from "@/components/monitoring/MonitoringDashboard";
 import { AnalysisResults } from "@/components/dashboard/AnalysisResults";
+import { SavedReports } from "@/components/dashboard/SavedReports";
 import { WebsiteAnalysis } from "@/lib/api/website-analysis";
 
 const Index = () => {
@@ -81,10 +82,10 @@ const Index = () => {
               <GeolocationMap />
             </div>
 
-            {/* Security & Recent */}
+            {/* Security & Saved Reports */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <SecurityScore />
-              <RecentScans />
+              <SavedReports />
             </div>
           </>
         );
