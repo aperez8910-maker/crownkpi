@@ -12,9 +12,12 @@ import { TopSources } from "@/components/dashboard/TopSources";
 import { RecentScans } from "@/components/dashboard/RecentScans";
 import { CompetitorComparison } from "@/components/competitor/CompetitorComparison";
 import { MonitoringDashboard } from "@/components/monitoring/MonitoringDashboard";
+import { AnalysisResults } from "@/components/dashboard/AnalysisResults";
+import { WebsiteAnalysis } from "@/lib/api/website-analysis";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [analysisResult, setAnalysisResult] = useState<WebsiteAnalysis | null>(null);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -53,7 +56,10 @@ const Index = () => {
         return (
           <>
             {/* URL Analyzer */}
-            <URLAnalyzer />
+            <URLAnalyzer onAnalyze={(url, analysis) => setAnalysisResult(analysis)} />
+
+            {/* Analysis Results */}
+            {analysisResult && <AnalysisResults analysis={analysisResult} />}
 
             {/* Key Metrics */}
             <div className="data-grid">
