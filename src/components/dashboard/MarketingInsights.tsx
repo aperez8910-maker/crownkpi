@@ -1,5 +1,6 @@
 import { Lightbulb, TrendingUp, Target, Megaphone, DollarSign, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface Insight {
   id: string;
@@ -46,6 +47,15 @@ const insights: Insight[] = [
 ];
 
 export function MarketingInsights() {
+  const { toast } = useToast();
+
+  const handleApply = (insight: Insight) => {
+    toast({
+      title: "Insight Applied",
+      description: `"${insight.title}" has been added to your action items.`,
+    });
+  };
+
   const getImpactColor = (impact: Insight["impact"]) => {
     switch (impact) {
       case "high": return "text-success bg-success/10 border-success/30";
@@ -89,7 +99,12 @@ export function MarketingInsights() {
                 <p className="text-sm text-muted-foreground line-clamp-2">{insight.description}</p>
                 <div className="flex items-center justify-between mt-3">
                   <span className="text-xs text-muted-foreground uppercase tracking-wider">{insight.category}</span>
-                  <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => handleApply(insight)}
+                  >
                     Apply
                     <ArrowUpRight className="w-4 h-4 ml-1" />
                   </Button>

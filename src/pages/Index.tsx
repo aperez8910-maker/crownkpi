@@ -9,11 +9,11 @@ import { SecurityScore } from "@/components/dashboard/SecurityScore";
 import { URLAnalyzer } from "@/components/dashboard/URLAnalyzer";
 import { MarketingInsights } from "@/components/dashboard/MarketingInsights";
 import { TopSources } from "@/components/dashboard/TopSources";
-import { RecentScans } from "@/components/dashboard/RecentScans";
 import { CompetitorComparison } from "@/components/competitor/CompetitorComparison";
 import { MonitoringDashboard } from "@/components/monitoring/MonitoringDashboard";
 import { AnalysisResults } from "@/components/dashboard/AnalysisResults";
 import { SavedReports } from "@/components/dashboard/SavedReports";
+import { SettingsPage } from "@/components/settings/SettingsPage";
 import { WebsiteAnalysis } from "@/lib/api/website-analysis";
 
 const Index = () => {
@@ -26,10 +26,12 @@ const Index = () => {
         return <CompetitorComparison />;
       case "monitoring":
         return <MonitoringDashboard />;
+      case "analyze":
         return (
           <div className="space-y-6">
-            <URLAnalyzer />
-            <RecentScans />
+            <URLAnalyzer onAnalyze={(url, analysis) => setAnalysisResult(analysis)} />
+            {analysisResult && <AnalysisResults analysis={analysisResult} />}
+            <SavedReports />
           </div>
         );
       case "traffic":
@@ -53,6 +55,8 @@ const Index = () => {
         return <SecurityScore />;
       case "insights":
         return <MarketingInsights />;
+      case "settings":
+        return <SettingsPage />;
       default:
         return (
           <>
