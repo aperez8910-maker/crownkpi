@@ -63,7 +63,10 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
 
       {/* Settings */}
       <div className="p-4 border-t border-sidebar-border">
-        <button className="nav-item w-full">
+        <button 
+          onClick={() => onTabChange("settings")}
+          className={cn("nav-item w-full", activeTab === "settings" && "active")}
+        >
           <Settings className="w-5 h-5" />
           <span>Settings</span>
         </button>
