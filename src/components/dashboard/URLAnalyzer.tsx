@@ -15,19 +15,27 @@ export function URLAnalyzer({ onAnalyze }: URLAnalyzerProps) {
   const { toast } = useToast();
 
   const handleAnalyze = async () => {
-    if (!url) return;
+    const trimmedUrl = url.trim();
+    console.log('handleAnalyze called, url:', trimmedUrl);
+    
+    if (!trimmedUrl) {
+      console.log('URL is empty, returning');
+      return;
+    }
     
     setIsAnalyzing(true);
+    console.log('Starting analysis...');
     
     try {
-      const result = await fullWebsiteAnalysis(url);
+      const result = await fullWebsiteAnalysis(trimmedUrl);
+      console.log('Analysis result:', result);
       
       if (result.success && result.analysis) {
         toast({
           title: "Analysis complete",
-          description: `Successfully analyzed ${new URL(url).hostname}`,
+          description: `Successfully analyzed ${new URL(trimmedUrl).hostname}`,
         });
-        onAnalyze?.(url, result.analysis);
+        onAnalyze?.(trimmedUrl, result.analysis);
       } else {
         toast({
           title: "Analysis failed",
@@ -36,6 +44,7 @@ export function URLAnalyzer({ onAnalyze }: URLAnalyzerProps) {
         });
       }
     } catch (error) {
+      console.error('Analysis error:', error);
       toast({
         title: "Error",
         description: "Failed to analyze website. Please try again.",
@@ -70,8 +79,9 @@ export function URLAnalyzer({ onAnalyze }: URLAnalyzerProps) {
           <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         </div>
         <Button 
+          type="button"
           onClick={handleAnalyze} 
-          disabled={!url || isAnalyzing}
+          disabled={!url.trim() || isAnalyzing}
           size="xl"
           variant="glow"
           className="min-w-[160px]"
