@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { WebsiteAnalysis } from "@/lib/api/website-analysis";
+import { saveAnalysisReport } from "@/lib/api/analysis-reports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -10,7 +14,9 @@ import {
   BarChart3,
   Globe,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Save,
+  Loader2
 } from "lucide-react";
 
 interface AnalysisResultsProps {
@@ -18,6 +24,38 @@ interface AnalysisResultsProps {
 }
 
 export function AnalysisResults({ analysis }: AnalysisResultsProps) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const { toast } = useToast();
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const result = await saveAnalysisReport(analysis);
+      if (result.success) {
+        setIsSaved(true);
+        toast({
+          title: "Report saved",
+          description: "Analysis report has been saved successfully.",
+        });
+      } else {
+        toast({
+          title: "Save failed",
+          description: result.error || "Failed to save report",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header with URL and Score */}
@@ -34,9 +72,33 @@ export function AnalysisResults({ analysis }: AnalysisResultsProps) {
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-4xl font-bold text-primary">{analysis.seoScore}</div>
-            <div className="text-sm text-muted-foreground">SEO Score</div>
+          <div className="flex items-center gap-4">
+            <Button 
+              onClick={handleSave} 
+              disabled={isSaving || isSaved}
+              variant={isSaved ? "secondary" : "glow"}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : isSaved ? (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Saved
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Save Report
+                </>
+              )}
+            </Button>
+            <div className="text-right">
+              <div className="text-4xl font-bold text-primary">{analysis.seoScore}</div>
+              <div className="text-sm text-muted-foreground">SEO Score</div>
+            </div>
           </div>
         </div>
         <div className="mt-4">
