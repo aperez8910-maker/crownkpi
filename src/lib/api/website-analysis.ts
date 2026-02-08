@@ -19,7 +19,7 @@ export interface WebsiteAnalysis {
   scrapedAt: Date;
 }
 
-export async function scrapeWebsite(url: string): Promise<{ success: boolean; data?: any; error?: string }> {
+export async function scrapeWebsite(url: string): Promise<{ success: boolean; data?: any; markdown?: string; error?: string }> {
   const { data, error } = await supabase.functions.invoke('scrape-website', {
     body: { url }
   });
@@ -60,11 +60,17 @@ export async function fullWebsiteAnalysis(url: string): Promise<{ success: boole
   // First scrape the website
   const scrapeResult = await scrapeWebsite(url);
   
-  if (!scrapeResult.success || !scrapeResult.data) {
+  console.log('Scrape result:', scrapeResult);
+  
+  // Firecrawl returns { success: true, data: { markdown, links, ... } }
+  if (!scrapeResult.success) {
     return { success: false, error: scrapeResult.error || 'Failed to scrape website' };
   }
 
-  const content = scrapeResult.data?.data?.markdown || scrapeResult.data?.markdown || '';
+  // Handle both nested and flat response structures
+  const content = scrapeResult.data?.markdown || scrapeResult.markdown || '';
+  
+  console.log('Extracted content length:', content.length);
   
   if (!content) {
     return { success: false, error: 'No content retrieved from website' };
