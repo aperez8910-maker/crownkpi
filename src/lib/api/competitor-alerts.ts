@@ -41,11 +41,10 @@ export async function unsubscribeFromCompetitor(
   email: string,
   competitorUrl: string
 ): Promise<{ success: boolean; error?: string }> {
-  const { error } = await supabase
-    .from('competitor_subscriptions')
-    .update({ is_active: false })
-    .eq('email', email)
-    .eq('competitor_url', competitorUrl);
+  const { error } = await supabase.rpc('deactivate_subscription', {
+    _email: email,
+    _competitor_url: competitorUrl,
+  });
 
   if (error) {
     console.error('Unsubscribe error:', error);
@@ -56,11 +55,9 @@ export async function unsubscribeFromCompetitor(
 }
 
 export async function getSubscriptions(email: string): Promise<CompetitorSubscription[]> {
-  const { data, error } = await supabase
-    .from('competitor_subscriptions')
-    .select('*')
-    .eq('email', email)
-    .eq('is_active', true);
+  const { data, error } = await supabase.rpc('get_subscriptions_by_email', {
+    _email: email,
+  });
 
   if (error) {
     console.error('Fetch subscriptions error:', error);
