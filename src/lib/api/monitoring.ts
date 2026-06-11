@@ -36,48 +36,20 @@ export interface SubscriptionWithLastCheck {
 }
 
 export async function getCronJobRuns(limit = 20): Promise<CronJobRun[]> {
-  const { data, error } = await supabase
-    .from('cron_job_runs')
-    .select('*')
-    .order('started_at', { ascending: false })
-    .limit(limit);
-
-  if (error) {
-    console.error('Error fetching cron job runs:', error);
-    return [];
-  }
-
-  return (data || []) as CronJobRun[];
+  // Operational data is no longer publicly readable. Requires admin auth (not yet implemented).
+  return [];
 }
 
 export async function getAlertHistory(limit = 50): Promise<AlertHistoryItem[]> {
-  const { data, error } = await supabase
-    .from('alert_history')
-    .select('*')
-    .order('sent_at', { ascending: false })
-    .limit(limit);
-
-  if (error) {
-    console.error('Error fetching alert history:', error);
-    return [];
-  }
-
-  return (data || []) as AlertHistoryItem[];
+  // Alert history contains user emails and is no longer publicly readable.
+  // Requires admin auth (not yet implemented).
+  return [];
 }
 
 export async function getActiveSubscriptions(): Promise<SubscriptionWithLastCheck[]> {
-  const { data, error } = await supabase
-    .from('competitor_subscriptions')
-    .select('*')
-    .eq('is_active', true)
-    .order('last_checked_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching subscriptions:', error);
-    return [];
-  }
-
-  return (data || []) as SubscriptionWithLastCheck[];
+  // Subscription list contains user emails and is no longer publicly readable.
+  // Use getSubscriptions(email) for per-user lookup. Requires admin auth for global view.
+  return [];
 }
 
 export async function triggerManualCheck(): Promise<{ success: boolean; error?: string; checked?: number; alerts?: number }> {
