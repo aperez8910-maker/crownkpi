@@ -10,7 +10,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fn:test": "node scripts/test-edge-function.mjs",
+    "fn:serve": "supabase functions serve --env-file supabase/.env.local --no-verify-jwt",
+    "fn:logs": "supabase functions logs",
+    "fn:deploy": "supabase functions deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

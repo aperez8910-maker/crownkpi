@@ -1,0 +1,5 @@
+{
+  "email": "you@example.com",
+  "competitor_url": "https://example.com",
+  "changes": [{ "field": "seo_score", "from": 70, "to": 80 }]
+}
