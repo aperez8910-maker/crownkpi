@@ -183,7 +183,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      deactivate_subscription: {
+        Args: { _competitor_url: string; _email: string }
+        Returns: boolean
+      }
+      get_subscriptions_by_email: {
+        Args: { _email: string }
+        Returns: {
+          competitor_url: string
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_analysis_hash: string | null
+          last_checked_at: string | null
+          last_seo_score: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "competitor_subscriptions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       [_ in never]: never

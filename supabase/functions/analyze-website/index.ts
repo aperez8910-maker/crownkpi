@@ -13,12 +13,29 @@ serve(async (req) => {
   try {
     const { websiteContent, url } = await req.json();
 
-    if (!websiteContent) {
+    if (!websiteContent || typeof websiteContent !== 'string') {
       return new Response(
         JSON.stringify({ success: false, error: 'Website content is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    if (typeof url !== 'string' || url.length > 2048) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid URL' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('bad protocol');
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid URL' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    // Cap content size to prevent abuse
+    const safeContent = websiteContent.slice(0, 100000);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -57,7 +74,7 @@ Be specific and actionable in your analysis. Base your estimates on the content 
         model: 'google/gemini-3-flash-preview',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Analyze this website (${url}):\n\n${websiteContent.substring(0, 15000)}` }
+          { role: 'user', content: `Analyze this website (${url}):\n\n${safeContent.substring(0, 15000)}` }
         ],
         response_format: { type: 'json_object' }
       }),
