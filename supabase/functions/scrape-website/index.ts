@@ -5,6 +5,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+function validateUrl(raw: string): { valid: boolean; url?: string; error?: string } {
+  if (!raw || typeof raw !== 'string') return { valid: false, error: 'URL is required' };
+  let candidate = raw.trim();
+  if (candidate.length > 2048) return { valid: false, error: 'URL too long' };
+  if (!/^https?:\/\//i.test(candidate)) candidate = `https://${candidate}`;
+  let parsed: URL;
+  try { parsed = new URL(candidate); } catch { return { valid: false, error: 'Invalid URL' }; }
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    return { valid: false, error: 'Only HTTP/HTTPS allowed' };
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (
+    host === 'localhost' || host.endsWith('.localhost') ||
+    /^127\./.test(host) || /^10\./.test(host) ||
+    /^192\.168\./.test(host) || /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    host === '0.0.0.0' || host === '::1' || host.startsWith('[')
+  ) {
+    return { valid: false, error: 'Internal/private addresses are not allowed' };
+  }
+  if (!host.includes('.')) return { valid: false, error: 'Invalid hostname' };
+  return { valid: true, url: parsed.toString() };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -13,9 +37,10 @@ serve(async (req) => {
   try {
     const { url } = await req.json();
 
-    if (!url) {
+    const validation = validateUrl(url);
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ success: false, error: 'URL is required' }),
+        JSON.stringify({ success: false, error: validation.error }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -29,11 +54,7 @@ serve(async (req) => {
       );
     }
 
-    // Format URL
-    let formattedUrl = url.trim();
-    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
-      formattedUrl = `https://${formattedUrl}`;
-    }
+    const formattedUrl = validation.url!;
 
     console.log('Scraping URL:', formattedUrl);
 
