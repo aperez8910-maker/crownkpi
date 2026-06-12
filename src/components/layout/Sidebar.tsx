@@ -1,14 +1,14 @@
-import { 
-  LayoutDashboard, 
-  Globe, 
-  BarChart3, 
-  Shield, 
-  MapPin, 
+import {
+  LayoutDashboard,
+  Globe,
+  BarChart3,
+  Shield,
+  MapPin,
   Lightbulb,
   Settings,
   Crown,
   Scale,
-  Clock
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,20 +31,18 @@ const navItems = [
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-      {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center shadow-lg shadow-gold/30">
             <Crown className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-foreground">CrownKPI</h1>
-            <p className="text-xs text-muted-foreground">Rule your metrics</p>
+            <h1 className="font-bold text-lg text-foreground">Crown KPI</h1>
+            <p className="text-xs text-muted-foreground">Website Intelligence</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => (
           <button
@@ -61,15 +59,19 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Settings */}
-      <div className="p-4 border-t border-sidebar-border">
-        <button 
+      <div className="p-4 border-t border-sidebar-border space-y-4">
+        <button
           onClick={() => onTabChange("settings")}
           className={cn("nav-item w-full", activeTab === "settings" && "active")}
         >
           <Settings className="w-5 h-5" />
           <span>Settings</span>
         </button>
+
+        <div className="rounded-lg border border-sidebar-border/70 bg-secondary/20 p-3 text-xs text-muted-foreground leading-relaxed">
+          <p className="font-medium text-foreground">Built by Alexander Emilio Perez</p>
+          <p>A CodeDesk OS portfolio project</p>
+        </div>
       </div>
     </aside>
   );
