@@ -20,20 +20,32 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [analysisResult, setAnalysisResult] = useState<WebsiteAnalysis | null>(null);
 
+  const metricCards = (
+    <div className="data-grid">
+      <MetricCard title="Total Visitors" value="118.2K" change={12.5} trend="up" icon={Users} accentColor="primary" />
+      <MetricCard title="Page Views" value="342.8K" change={8.2} trend="up" icon={Eye} accentColor="accent" />
+      <MetricCard title="Click Rate" value="4.28%" change={-2.1} trend="down" icon={MousePointerClick} accentColor="warning" />
+      <MetricCard title="Avg. Session" value="3m 42s" change={5.8} trend="up" icon={Clock} accentColor="success" />
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case "competitors":
         return <CompetitorComparison />;
+
       case "monitoring":
         return <MonitoringDashboard />;
+
       case "analyze":
         return (
           <div className="space-y-6">
-            <URLAnalyzer onAnalyze={(url, analysis) => setAnalysisResult(analysis)} />
+            <URLAnalyzer onAnalyze={(_, analysis) => setAnalysisResult(analysis)} />
             {analysisResult && <AnalysisResults analysis={analysisResult} />}
             <SavedReports />
           </div>
         );
+
       case "traffic":
         return (
           <div className="space-y-6">
@@ -41,74 +53,62 @@ const Index = () => {
               <TrafficChart />
               <TopSources />
             </div>
-            <div className="data-grid">
-              <MetricCard title="Total Visitors" value="118.2K" change={12.5} trend="up" icon={Users} accentColor="primary" />
-              <MetricCard title="Page Views" value="342.8K" change={8.2} trend="up" icon={Eye} accentColor="accent" />
-              <MetricCard title="Click Rate" value="4.28%" change={-2.1} trend="down" icon={MousePointerClick} accentColor="warning" />
-              <MetricCard title="Avg. Session" value="3m 42s" change={5.8} trend="up" icon={Clock} accentColor="success" />
-            </div>
+            {metricCards}
           </div>
         );
+
       case "geolocation":
         return <GeolocationMap />;
+
       case "security":
         return <SecurityScore />;
+
       case "insights":
         return <MarketingInsights />;
+
       case "settings":
         return <SettingsPage />;
+
       default:
         return (
-          <>
-            {/* URL Analyzer */}
-            <URLAnalyzer onAnalyze={(url, analysis) => setAnalysisResult(analysis)} />
+          <div className="space-y-6">
+            <URLAnalyzer onAnalyze={(_, analysis) => setAnalysisResult(analysis)} />
 
-            {/* Analysis Results */}
             {analysisResult && <AnalysisResults analysis={analysisResult} />}
 
-            {/* Key Metrics */}
-            <div className="data-grid">
-              <MetricCard title="Total Visitors" value="118.2K" change={12.5} trend="up" icon={Users} accentColor="primary" />
-              <MetricCard title="Page Views" value="342.8K" change={8.2} trend="up" icon={Eye} accentColor="accent" />
-              <MetricCard title="Click Rate" value="4.28%" change={-2.1} trend="down" icon={MousePointerClick} accentColor="warning" />
-              <MetricCard title="Avg. Session" value="3m 42s" change={5.8} trend="up" icon={Clock} accentColor="success" />
-            </div>
+            {metricCards}
 
-            {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TrafficChart />
               <TopSources />
             </div>
 
-            {/* Insights & Geo Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <MarketingInsights />
               <GeolocationMap />
             </div>
 
-            {/* Security & Saved Reports */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <SecurityScore />
               <SavedReports />
             </div>
-          </>
+          </div>
         );
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Background gradient effects */}
+    <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      <main className="ml-64 min-h-screen">
+
+      <main className="relative z-10 ml-64 min-h-screen bg-transparent">
         <Header />
-        
+
         <div className="p-6 space-y-6">
           {renderContent()}
         </div>
